@@ -24,7 +24,10 @@ try {
   stage('plan') {
     node {
          ansiColor('xterm') {
-          sh 'terraform plan'
+          sh '''
+              export PATH=$PATH:/home/sysadmin/bin
+              terraform plan
+             '''
         }
       }
     }
@@ -35,30 +38,24 @@ try {
     // Run terraform apply
     stage('apply') {
       node {
-        withCredentials([[
-          $class: 'AmazonWebServicesCredentialsBinding',
-          credentialsId: credentialsId,
-          accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-          secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-        ]]) {
           ansiColor('xterm') {
-            sh 'terraform apply -auto-approve'
+            sh '''
+                export PATH=$PATH:/home/sysadmin/bin
+                terraform apply -auto-approve
+               '''
           }
         }
       }
-    }
+    
 
     // Run terraform show
     stage('show') {
       node {
-        withCredentials([[
-          $class: 'AmazonWebServicesCredentialsBinding',
-          credentialsId: credentialsId,
-          accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-          secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-        ]]) {
           ansiColor('xterm') {
-            sh 'terraform show'
+            sh '''
+                export PATH=$PATH:/home/sysadmin/bin
+                terraform show
+               '''
           }
         }
       }
