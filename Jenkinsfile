@@ -12,7 +12,10 @@ try {
   stage('init') {
     node {
           ansiColor('xterm') {
-          sh 'terraform init'
+          sh '''
+              export PATH=$PATH:/home/sysadmin/bin
+              terraform init
+             '''
         }
       }
     }
