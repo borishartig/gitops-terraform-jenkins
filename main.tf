@@ -1,47 +1,20 @@
-## Terraform state will be stored in S3
-terraform {
-  backend "s3" {
-    bucket = "terraform-bucket-alex"
-    key    = "terraform.tfstate"
-    region = "us-east-1"
-  }
+# Configure the Azure Provider
+provider "azurerm" {
+  # whilst the `version` attribute is optional, we recommend pinning to a given version of the Provider
+  version = "=2.0.0"
+  features {}
 }
 
-# Use AWS Terraform provider
-provider "aws" {
-  region = "us-east-1"
+# Create a resource group
+resource "azurerm_resource_group" "example" {
+  name     = "RG-BORIS"
+  location = "West Europe"
 }
 
-# Create EC2 instance
-resource "aws_instance" "default" {
-  ami                    = var.ami
-  count                  = var.instance_count
-  key_name               = var.key_name
-  vpc_security_group_ids = [aws_security_group.default.id]
-  source_dest_check      = false
-  instance_type          = var.instance_type
-
-  tags = {
-    Name = "terraform-default"
-  }
-}
-
-# Create Security Group for EC2
-resource "aws_security_group" "default" {
-  name = "terraform-default-sg"
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
+# Create a virtual network within the resource group
+resource "azurerm_virtual_network" "example" {
+  name                = "VN-BORIS"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+  address_space       = ["100.64.0.0/16"]
 }
